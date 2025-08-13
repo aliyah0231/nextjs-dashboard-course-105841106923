@@ -21,7 +21,7 @@ async function getCustomers() {
 }
 
 export default async function Page() {
-  const customers = await getCustomers();
+  const customers = Array.from(await getCustomers());
 
   return (
     <div className="p-4">
