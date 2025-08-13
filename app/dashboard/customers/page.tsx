@@ -23,9 +23,9 @@ async function getCustomers() {
 export default async function Page() {
   const customers = await getCustomers();
 
-  // return (
-  //   <div className="p-4">
-  //     <CustomersTable customers={customers} />
-  //   </div>
-  // );
+  return (
+    <div className="p-4">
+      <CustomersTable customers={customers} />
+    </div>
+  );
 }

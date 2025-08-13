@@ -49,9 +49,10 @@ export default async function Page(props: {
       </Suspense>
 
       {/* Pagination */}
-      <div className="mt-6 flex justify-center">
-        <Pagination totalPages={totalPages} currentPage={currentPage} query={query} />
-      </div>
+      {/* Pagination */}
+        <div className="mt-6 flex justify-center">
+          <Pagination totalPages={totalPages} />
+        </div>
     </div>
   );
 }
