@@ -20,16 +20,17 @@ async function getCustomers(): Promise<FormattedCustomersTable[]> {
     ORDER BY c.name;
   `;
 
-  return rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    email: row.email,
-    image_url: row.image_url,
-    total_invoices: String(row.total_invoices),
-    total_pending: String(row.total_pending),
-    total_paid: String(row.total_paid),
-  }));
-}
+return rows.map(
+    (row: any): FormattedCustomersTable => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      image_url: row.image_url,
+      total_invoices: Number(row.total_invoices),
+      total_pending: Number(row.total_pending).toString(),
+      total_paid: Number(row.total_paid).toString(),
+    })
+  );
 
 export default async function Page() {
   const customers = await getCustomers();
