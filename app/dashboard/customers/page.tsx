@@ -1,38 +1,31 @@
-// app/dashboard/customers/page.tsx
-import CustomersTable from '../../ui/customers/table';
-import { customers, invoices } from '../../lib/placeholder-data';
+import CustomersTable from '@/app/ui/customers/table';
+import postgres from 'postgres';
 
-export default function Page() {
-  const formattedCustomers = customers.map(customer => {
-    // Ambil semua invoice milik customer ini
-    const customerInvoices = invoices.filter(
-      inv => inv.customer_id === customer.id
-    );
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-    // Hitung total invoice
-    const totalInvoices = customerInvoices.length;
+async function getCustomers() {
+  return await sql`
+    SELECT
+      c.id,
+      c.name,
+      c.email,
+      c.image_url,
+      COUNT(i.id) AS total_invoices,
+      SUM(CASE WHEN i.status = 'pending' THEN i.amount ELSE 0 END) AS total_pending,
+      SUM(CASE WHEN i.status = 'paid' THEN i.amount ELSE 0 END) AS total_paid
+    FROM customers c
+    LEFT JOIN invoices i ON c.id = i.customer_id
+    GROUP BY c.id
+    ORDER BY c.name;
+  `;
+}
 
-    // Hitung total pending
-    const totalPending = customerInvoices
-      .filter(inv => inv.status === 'pending')
-      .reduce((sum: number, inv) => sum + inv.amount, 0);
-
-    // Hitung total paid
-    const totalPaid = customerInvoices
-      .filter(inv => inv.status === 'paid')
-      .reduce((sum, inv) => sum + inv.amount, 0);
-
-    return {
-      ...customer,
-      total_invoices: totalInvoices,
-      total_pending: `$${(totalPending / 100).toFixed(2)}`,
-      total_paid: `$${(totalPaid / 100).toFixed(2)}`
-    };
-  });
+export default async function Page() {
+  const customers = await getCustomers();
 
   return (
-    <div>
-      <CustomersTable customers={formattedCustomers} />
+    <div className="p-4">
+      <CustomersTable customers={customers} />
     </div>
   );
 }
