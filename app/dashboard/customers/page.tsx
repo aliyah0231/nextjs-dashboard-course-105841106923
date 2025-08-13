@@ -31,6 +31,7 @@ return rows.map(
       total_paid: Number(row.total_paid).toString(),
     })
   );
+}
 
 export default async function Page() {
   const customers = await getCustomers();
